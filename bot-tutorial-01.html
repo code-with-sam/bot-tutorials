@@ -1,0 +1,49 @@
+<html>
+<head>
+  <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+
+<script>
+console.log('hello, is this working')
+
+// Tutorial
+const ACCOUNT_NAME = ''
+const ACCOUNT_WIF = ''
+const DELAY = 5000
+const FRIEND_LIST = ['sam', 'fred', 'sarah', 'lucy', 'learntocode']
+
+steem.api.setOptions({ url: 'wss://rpc.buildteam.io' });
+
+steem.api.streamTransactions('head', (err, result) => {
+  console.log(result)
+  let txType = result.operations[0][0]
+  let txData = result.operations[0][1]
+
+     if(txType == 'comment') {
+        checkAuthor(txData)
+     }
+});
+
+function checkAuthor(txData){
+  if (txData.parent_author == '' &&  isFriend(txData.author)){
+    sendVote(txData.author, txData.permlink)
+  }
+}
+
+function isFriend(name){
+  return (FRIEND_LIST.indexOf(name) > -1);
+}
+
+function sendVote(author, permlink){
+
+  setTimeout( () => {
+    steem.broadcast.vote(ACCOUNT_WIF, ACCOUNT_NAME, author, permlink, 10000, function(err, result) {
+
+      console.log(result);
+    });
+  }, DELAY )
+}
+
+</script>
+</head>
+<body></body>
+</html>

@@ -1,0 +1,43 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script>
+        console.log('Hello, Is Anybody OUt There!?')
+
+        // Tutorial 02 - curation trail bot
+
+        //  STEP 1
+        const ACCOUNT_NAME = ''
+        const ACCOUNT_KEY = ''
+        const TARGET_ACCOUNT = 'sambillingham'
+
+        // STEP 2
+        steem.api.setOptions({ url: 'wss://rpc.buildteam.io' });
+
+        steem.api.streamTransactions('head', function(err, result) {
+          let txType = result.operations[0][0]
+          let txData = result.operations[0][1]
+
+             if(txType == 'vote' && txData.voter == TARGET_ACCOUNT) {
+                console.log(TARGET_ACCOUNT, ': has just voted')
+
+                console.log(txData.author, txData.permlink, txData.weight)
+
+                sendVote(txData.author, txData.permlink, txData.weight)
+             }
+        });
+
+        function sendVote(author, permlink, weight){
+
+            steem.broadcast.vote(ACCOUNT_KEY, ACCOUNT_NAME, author, permlink, weight, function(err, result) {
+                console.log(err, result)
+                console.log(`WE have just copied ${TARGET_ACCOUNT} and also upvoted ${author}`)
+            });
+
+        }
+
+      </script>
+    </head>
+    <body></body>
+</html>
