@@ -1,0 +1,59 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script>
+        console.log('Hello, Is Anybody OUt There!?')
+
+        // Tutorial 03 - Copy Follow Bot
+
+        //  STEP 1
+        const ACCOUNT_NAME = ''
+        const ACCOUNT_KEY = ''
+        const TARGET_ACCOUNTS = ['sambillingham', 'cryptoctopus', 'kevinwong', 'wehmoen', 'cutemachine']
+
+        // STEP 2
+        steem.api.setOptions({ url: 'wss://rpc.buildteam.io' });
+
+        steem.api.streamTransactions('head', function(err, result) {
+          let txType = result.operations[0][0]
+          let txData = result.operations[0][1]
+
+             if(txType == 'custom_json') {
+
+               let json = JSON.parse(txData.json)
+               let dataType =  json[0]
+               let dataContent = json[1]
+
+               if ( dataType == 'follow'  && isTarget(dataContent.follower) ){
+                 console.log(`${dataContent.follower} started following ${dataContent.following}`)
+
+                  followAccount(dataContent.following)
+
+               }
+             }
+        });
+
+        function isTarget(name){
+          return (TARGET_ACCOUNTS.indexOf(name) > -1);
+        }
+
+        function followAccount(name){
+
+            let info = ['follow', {
+              follower: ACCOUNT_NAME,
+              following: name,
+              what: ['blog']
+            }]
+            let json = JSON.stringify(info);
+
+            steem.broadcast.customJson( ACCOUNT_KEY, [], [ACCOUNT_NAME], 'follow', json, function(err, result) {
+              console.log(`${ACCOUNT_NAME} has just started following ${name}`)
+              console.log(err, result);
+            });
+        }
+
+      </script>
+    </head>
+    <body></body>
+</html>
