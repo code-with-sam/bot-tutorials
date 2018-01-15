@@ -18,10 +18,6 @@
         steem.api.streamTransactions('head', function(err, result) {
           let txType = result.operations[0][0]
           let txData = result.operations[0][1]
-
-          if(txType == 'custom_json') {
-            console.log(txType,txData)
-          }
         });
 
         function isTarget(name){
