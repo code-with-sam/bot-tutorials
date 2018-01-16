@@ -1,0 +1,30 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js 03</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script>
+        console.log('Hello, Is Anybody OUt There!?')
+
+        // Tutorial 04 - Paid Vote Bot
+
+        //  STEP 1
+        const ACCOUNT_NAME = ''
+        const ACCOUNT_KEY = ''
+        const TARGET_ACCOUNTS = ['sambillingham']
+
+        steem.api.setOptions({ url: 'wss://rpc.buildteam.io' });
+        steem.api.streamTransactions('head', function(err, result) {
+          let txType = result.operations[0][0]
+          let txData = result.operations[0][1]
+        });
+
+        steem.broadcast.vote(ACCOUNT_KEY, ACCOUNT_NAME, author, permlink, weight, function(err, result) {
+            console.log(err, result)
+        });
+
+      </script>
+    </head>
+    <body>
+      Look In The Console.
+    </body>
+</html>

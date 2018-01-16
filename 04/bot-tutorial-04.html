@@ -1,0 +1,62 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script>
+        console.log('Hello, Is Anybody OUt There!?')
+
+        // Tutorial 04 - Paid Upvote Bot
+        const ACCOUNT_NAME = ''
+        const ACCOUNT_KEY = ''
+
+        steem.api.setOptions({ url: 'wss://rpc.buildteam.io' });
+
+        steem.api.streamTransactions('head', function(err, result) {
+          let txType = result.operations[0][0]
+          let txData = result.operations[0][1]
+
+          if(txType == 'transfer' && txData.to == ACCOUNT_NAME) {
+             sendVote(txData.from, txData.memo, txData.amount)
+          }
+        });
+
+        function sendVote(author, memo, amountPaid){
+            let memoToPermlink = memo.split('/')
+            let permlink = memoToPermlink.pop()
+            let weight = calcVoteWeight(amountPaid)
+
+            console.log ( author, permlink, weight )
+            steem.broadcast.vote(ACCOUNT_KEY, ACCOUNT_NAME, author, permlink, weight, function(err, result) {
+                console.log(err, result)
+                console.log(`WE have just voted on the post by ${author} with a vote power of ${weight/100}%`)
+            });
+
+        }
+
+        function calcVoteWeight(amountPaid) {
+          let token = amountPaid.split(' ')
+          let tokenType = token.pop()
+          let tokenValue = token.shift()
+          let weight;
+          let steemToSbdRatio = 0.8
+
+          if (tokenValue >= 1){
+            weight = 100
+          } else if (tokenValue >= 0.5) {
+            weight = 50
+          } else {
+            weight = 10
+          }
+
+          if( tokenType == 'STEEM') {
+            return (weight * steemToSbdRatio) * 100
+          } else {
+            return weight * 100
+          }
+        }
+
+
+      </script>
+    </head>
+    <body></body>
+</html>
