@@ -1,0 +1,49 @@
+<html>
+    <head>
+    <title>Bot's in Steem-js 5</title>
+      <script src="https://cdn.steemjs.com/lib/latest/steem.min.js"></script>
+      <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous"></script>
+      <script>
+        console.log('Hello, Is Anybody OUt There!?')
+
+        // Tutorial 05 - @mention Bot
+        const ACCOUNT_NAME = ''
+
+        steem.api.setOptions({ url: 'wss://rpc.buildteam.io' });
+
+        steem.api.streamTransactions('head', function(err, result) {
+          let txType = result.operations[0][0]
+          let txData = result.operations[0][1]
+          let includesMention = checkContentForMention(txType,txData)
+          if (includesMention) {
+            console.log('MENTION FOUND: ', txData)
+            sendEmail(txData)
+          }
+        });
+
+        function checkContentForMention(txType,txData) {
+          if(txType == 'comment') {
+            console.log('CHECKING FOR MENTION: ', txData)
+            let commentBody = txData.body;
+            let mentionUsername = '@' + ACCOUNT_NAME;
+            return commentBody.includes(mentionUsername);
+          }
+        }
+
+        function sendEmail(txData){
+          console.log('SENDING EMAIL',  )
+          $.ajax({
+              url: 'https://formspree.io/sambillie.sb@gmail.com',
+              method: 'POST',
+              data: { message: `Hey! Looks like @${txData.author} mentioned you in their post http://steemit.com/@${txData.author}/${txData.permlink}` },
+              dataType: 'json'
+          });
+        }
+
+      </script>
+    </head>
+    <body></body>
+</html>
